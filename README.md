@@ -22,8 +22,9 @@ val leaseName = "SOME_SHARED_NETWORK_RESOURCE"
 // Ask for a lease that is reserved for us for 10 seconds
 val lease: Lease = elysees.requestLease(leaseName, leaseDuration)
 lease.nullIfGranted()?.let {
-    // This is some demonstration code only where we know that the lease was obtained as there is no other
-    // requester for that lease. On the following lines it is assumed that the lease was obtained.
+    // This is some demonstration code only where we know that the lease was obtained as there
+    // is no other requester for that lease. On the following lines it is assumed that the
+    // lease was obtained.
     return
 }
 
@@ -41,9 +42,9 @@ while(visitCount < visitMaxCount) {
         sharedDummyNetworkResource.put("foo", getSomeNewValue())
         // do some work
     } else {
-    // Assuming that renewing the lease was not possible as some other requester obtained it in the meanwhile.
-    // Therefore, the lease has to be requested again from the beginning. The lease is requested for
-    // <leaseDuration> for a retry period of <leaseDuration * 2>
+    // Assuming that renewing the lease was not possible as some other requester obtained it
+    // in the meanwhile. Therefore, the lease has to be requested again from the beginning.
+    // The lease is requested for <leaseDuration> for a retry period of <leaseDuration * 2>
     if(!lease.request(leaseDuration, leaseDuration * 2)) {
         break // for this simple demonstration code case we just give up and exit
     }
