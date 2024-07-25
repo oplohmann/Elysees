@@ -28,6 +28,12 @@ lease.nullIfGranted()?.let {
     return
 }
 
+// There is no problem with context switches leading to race conditions on this line and the
+// following lines below. This is because the shared resource for reserved for much more
+// time that would be sufficient to carry out the required operations. In this way leases
+// are lot simpler than locks. What on the other hand has to be taken well care of with
+// leases is to make sure that the lease has not expired in the meantime.
+
 lease.ifGranted {
     sharedDummyNetworkResource.put("foo", RANDOMIZER.nextInt(1_000))
 }
@@ -51,4 +57,32 @@ while(visitCount < visitMaxCount) {
   }
 }
 
+```
+
+#### Lease was not obtained in the first place
+
+```
+val leaseDuration = TimeUnit.SECONDS.toMillis(2)
+val leaseName = "SOME_SHARED_NETWORK_RESOURCE"
+val otherLease: Lease = elysees.requestLease(leaseName, leaseDuration)
+assertTrue(otherLease.isGranted())
+
+var leaseWasFinallyObtained = false
+
+val lease: Lease = elysees.requestLease(leaseName, leaseDuration)
+lease.ifNotGranted {
+    // Lease <lease> not obtained as <otherLease> obtained it first and we have to
+    // wait till its lease duration has expired or was returned by its own before
+    // the end of the lease time. In this simple demonstration test case we just wait
+    // for <lease.durationTillExpiry()> ms.
+    doSomeOtherWorkForDuration(lease.durationTillExpiry())
+    if(lease.request(leaseDuration, leaseDuration * 2)) {
+        leaseWasFinallyObtained = true
+    }
+    doSomeWork()
+    // It is not required to release a lease after access to some shared resource has
+    // finished, but it improves throughput as some other thread trying to obtain that
+    // lease will be granted access to the shared resource as early as possible.
+    lease.release()
+}
 ```
