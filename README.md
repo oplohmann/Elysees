@@ -53,7 +53,7 @@ while(visitCount < visitMaxCount) {
     // in the meanwhile. Therefore, the lease has to be requested again from the beginning.
     // The lease is requested for <leaseDuration> for a retry period of <leaseDuration * 2>
     if(!lease.request(leaseDuration, leaseDuration * 2)) {
-        break // for this simple demonstration code case we just give up and exit
+        break // for this simple demonstration code we just give up and exit
     }
   }
 }
