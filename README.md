@@ -12,6 +12,7 @@ Elysees is written in Kotlin using Spring Boot with the remote lease server bein
 
 Some sample code of how to program with leases in Elysees can be seen from the demonstration test case [ClientSideUserTest](https://github.com/oplohmann/Elysees/blob/main/src/test/kotlin/org/objectscape/elysees/ClientSideUserTest.kt). Here is some sample code to show how to program with Elysees:
 
+
 #### Request and renew a lease
 
 ```
@@ -59,6 +60,7 @@ while(visitCount < visitMaxCount) {
 
 ```
 
+
 #### Lease was not obtained in the first place
 
 ```
@@ -73,13 +75,12 @@ val lease: Lease = elysees.requestLease(leaseName, leaseDuration)
 lease.ifNotGranted {
     // Lease <lease> not obtained as <otherLease> obtained it first and we have to
     // wait till its lease duration has expired or was returned by its own before
-    // the end of the lease time. In this simple demonstration test case we just wait
+    // the end of the lease time. In this simple demonstration code we just wait
     // for <lease.durationTillExpiry()> ms.
     doSomeOtherWorkForDuration(lease.durationTillExpiry())
     if(lease.request(leaseDuration, leaseDuration * 2)) {
-        leaseWasFinallyObtained = true
+        doSomeWorkForLeaseDuration()
     }
-    doSomeWork()
     // It is not required to release a lease after access to some shared resource has
     // finished, but it improves throughput as some other thread trying to obtain that
     // lease will be granted access to the shared resource as early as possible.
